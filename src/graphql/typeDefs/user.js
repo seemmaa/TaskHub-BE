@@ -8,16 +8,26 @@ module.exports = gql`
     role: String!
     token: String
   }
+
+     type AuthPayload {
+    token: String!
+   role: String!
+   username: String!
+    id: String!
+   
+  }
 type Query {
   me:User
   students:[String]!
   getUsers: [User]
+  getStudents:[User]
+  getAdmins:[User]
 }
  
  
   type Mutation {
     register(username: String!, password: String!, universityId:String): User
-    login(username: String!, password: String!): User
+    login(username: String!, password: String!,staySignedIn: Boolean!):AuthPayload
    
   }
 `;

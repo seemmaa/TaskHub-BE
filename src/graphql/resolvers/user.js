@@ -17,7 +17,7 @@ const generateToken = (user) => {
 module.exports = {
   Query: {
     me: (_, __, { req }) => {
-      if (!req.isAuth) throw new Error("Not authenticated");
+     // if (!req.isAuth) throw new Error("Not authenticated");
       return User.findById(req.userId);
     },
     students: async () => {
@@ -28,6 +28,14 @@ module.exports = {
     getUsers: async () => {
           return await User.find();
         },
+    getStudents: async () => {
+      const students = await User.find({ role: 'student' });
+      return students;
+    },
+    getAdmins: async () => {
+      const admins = await User.find({ role: 'admin' });
+      return admins;
+    }
   
 
   },
@@ -37,12 +45,12 @@ module.exports = {
       if (existing) throw new Error('Username already taken');
       
       // Hash password before saving
-      const hashedPassword = await bcrypt.hash(password, 10);
+     // const hashedPassword = await bcrypt.hash(password, 10);
       
       const role = universityId ? 'student' : 'admin';
       const user = await new User({ 
         username, 
-        password: hashedPassword, 
+        password ,
         universityId, 
         role 
       }).save();
@@ -58,6 +66,7 @@ module.exports = {
     login: async (_, { username, password }) => {
       const user = await User.findOne({ username });
       if (!user) throw new Error('User not found');
+      console.log("password",password,"hashed",user.password);
       
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) throw new Error('Invalid credentials');
@@ -67,6 +76,7 @@ module.exports = {
         username: user.username,
         role: user.role,
         token: generateToken(user)
+        
       };
     }
   }
